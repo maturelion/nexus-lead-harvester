@@ -1,0 +1,10 @@
+{
+  "name": "nexus-lead-harvester",
+  "version": "2.0.0",
+  "description": "Autonomous lead extraction and technical vulnerability analysis engine",
+  "main": "fetch_real_leads.mjs",
+  "type": "module",
+  "dependencies": {
+    "playwright": "^1.41.0"
+  }
+}
