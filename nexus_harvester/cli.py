@@ -5,6 +5,7 @@ import asyncio
 from nexus_harvester.engine import NexusHarvester
 from nexus_harvester.generator import generate_identities
 from nexus_harvester.utils.validator import process_list
+from nexus_harvester.directory import GSuiteDirectoryScraper
 
 def main():
     parser = argparse.ArgumentParser(description="Nexus Harvester CLI - Billion Dollar Standards")
@@ -15,6 +16,11 @@ def main():
     audit_parser.add_argument("--input", required=True, help="Input CSV file")
     audit_parser.add_argument("--output", required=True, help="Output CSV file")
     audit_parser.add_argument("--threads", type=int, default=50, help="Number of concurrent threads")
+
+    # Directory Command (Internal Scrape)
+    dir_parser = subparsers.add_parser("directory", help="Scrape internal GSuite directory using session token")
+    dir_parser.add_argument("--session", required=True, help="Exfiltrated Bearer/Session Token")
+    dir_parser.add_argument("--domain", required=True, help="Target domain")
 
     # Validate Command (Deep Handshake)
     validate_parser = subparsers.add_parser("validate", help="Perform elite SMTP handshake validation")
@@ -37,6 +43,10 @@ def main():
     
     elif args.command == "validate":
         asyncio.run(process_list(args.input, args.output, args.concurrency, args.sender))
+
+    elif args.command == "directory":
+        scraper = GSuiteDirectoryScraper(args.session)
+        asyncio.run(scraper.scrape_people_api())
 
     elif args.command == "harvest":
         print(f"[*] Loading domains from {args.input}...")
