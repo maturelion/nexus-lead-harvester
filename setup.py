@@ -6,7 +6,9 @@ setup(
     packages=find_packages(),
     install_requires=[
         "dnspython",
-        "requests"
+        "requests",
+        "aiodns",
+        "aiofiles"
     ],
     entry_points={
         'console_scripts': [

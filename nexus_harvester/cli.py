@@ -1,8 +1,10 @@
 import argparse
 import sys
 import csv
+import asyncio
 from nexus_harvester.engine import NexusHarvester
 from nexus_harvester.generator import generate_identities
+from nexus_harvester.utils.validator import process_list
 
 def main():
     parser = argparse.ArgumentParser(description="Nexus Harvester CLI - Billion Dollar Standards")
@@ -13,6 +15,13 @@ def main():
     audit_parser.add_argument("--input", required=True, help="Input CSV file")
     audit_parser.add_argument("--output", required=True, help="Output CSV file")
     audit_parser.add_argument("--threads", type=int, default=50, help="Number of concurrent threads")
+
+    # Validate Command (Deep Handshake)
+    validate_parser = subparsers.add_parser("validate", help="Perform elite SMTP handshake validation")
+    validate_parser.add_argument("--input", required=True, help="Input file (txt/csv)")
+    validate_parser.add_argument("--output", required=True, help="Output CSV path")
+    validate_parser.add_argument("--concurrency", type=int, default=100, help="Concurrent handshake threads")
+    validate_parser.add_argument("--sender", default="verify@example.com", help="Sender email for handshake")
 
     # Harvest Command
     harvest_parser = subparsers.add_parser("harvest", help="Generate mass identities from audited domains")
@@ -26,6 +35,9 @@ def main():
         harvester = NexusHarvester(threads=args.threads)
         harvester.harvest_batch(args.input, args.output)
     
+    elif args.command == "validate":
+        asyncio.run(process_list(args.input, args.output, args.concurrency, args.sender))
+
     elif args.command == "harvest":
         print(f"[*] Loading domains from {args.input}...")
         domains = []
